@@ -1,3 +1,6 @@
+python3 -m pip install --upgrade pip
+python3 -m pip install --upgrade Pillow --no-binary :all:
+
 import streamlit as st
 from PIL import Image
 import instaloader
