@@ -61,16 +61,21 @@ def HomePage():
     st.title("Get the sentimental analysis of any profile you want")
     insta_id = st.text_input("Enter the Instagram ID: ")
     if st.button("Get"):
-        loader = instaloader.Instaloader()
-        profile = instaloader.Profile.from_username(loader.context, insta_id)
-        for post in profile.get_posts():
-            post_comments = post.get_comments()
-            for comment in post_comments:
-                comments.append(comment.text)
-        st.title("Comments")
-        st.text_area(label='', value='\n'.join(comments), height=300)
-        display_sentiment_chart(comments)
-        display_sentiment_summary(comments)
+        try:
+            loader = instaloader.Instaloader()
+            profile = instaloader.Profile.from_username(loader.context, insta_id)
+            for post in profile.get_posts():
+                post_comments = post.get_comments()
+                for comment in post_comments:
+                    comments.append(comment.text)
+            st.title("Comments")
+            st.text_area(label='', value='\n'.join(comments), height=300)
+            display_sentiment_chart(comments)
+            display_sentiment_summary(comments)
+        except instaloader.exceptions.LoginRequiredException:
+            st.error("Login required. Please provide valid Instagram login credentials.")
+        except Exception as e:
+            st.error(f"An error occurred: {str(e)}")
 
 def main_page():
     st.title("Enter the login details of your Instagram ID")
