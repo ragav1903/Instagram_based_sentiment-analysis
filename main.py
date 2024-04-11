@@ -1,11 +1,11 @@
 import streamlit as st
-from PIL import Image
 import instaloader
 from nltk.sentiment import SentimentIntensityAnalyzer
 import nltk
 nltk.download('vader_lexicon')
 
 sia = SentimentIntensityAnalyzer()
+loader = instaloader.Instaloader()
 
 def analyze_sentiment(comment):
     sentiment_scores = sia.polarity_scores(comment)
@@ -62,7 +62,6 @@ def HomePage():
     insta_id = st.text_input("Enter the Instagram ID: ")
     if st.button("Get"):
         try:
-            loader = instaloader.Instaloader()
             profile = instaloader.Profile.from_username(loader.context, insta_id)
             for post in profile.get_posts():
                 post_comments = post.get_comments()
@@ -83,15 +82,18 @@ def main_page():
     password = st.text_input("Password", type="password")
     if st.button("Login"):
         try:
-            loader = instaloader.Instaloader()
             st.write("logging in")
             loader.login(username, password)
             st.success("Logged in as {}".format(username))
             st.write("Redirecting to home page...")
             st.session_state.runpage = HomePage
             st.experimental_rerun()
-        except:
+        except instaloader.exceptions.InvalidArgumentException:
             st.error("Invalid username or password")
+        except instaloader.exceptions.ConnectionException:
+            st.error("Connection error. Please check your internet connection.")
+        except Exception as e:
+            st.error(f"An error occurred: {str(e)}")
 
 if "runpage" not in st.session_state:
     st.session_state.runpage = main_page
