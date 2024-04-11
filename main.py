@@ -57,38 +57,37 @@ def display_sentiment_summary(commentslst):
 comments = []
 
 def HomePage():
-  comments.clear()  # Clear the comments list
-  st.title("Get the sentimental analysis of any profile you want")
-  insta_id = st.text_input("Enter the Instagram ID: ")
-  if st.button("Get"):
-    profile = instaloader.Profile.from_username(loader.context, insta_id)
-    for post in profile.get_posts():
-      post_comments = post.get_comments()
-      for comment in post_comments:
-          comments.append(comment.text)
-    st.title("Comments")
-    st.text_area(label='', value='\n'.join(comments), height=300)
-    display_sentiment_chart(comments)
-    display_sentiment_summary(comments)
+    comments.clear()  # Clear the comments list
+    st.title("Get the sentimental analysis of any profile you want")
+    insta_id = st.text_input("Enter the Instagram ID: ")
+    if st.button("Get"):
+        loader = instaloader.Instaloader()
+        profile = instaloader.Profile.from_username(loader.context, insta_id)
+        for post in profile.get_posts():
+            post_comments = post.get_comments()
+            for comment in post_comments:
+                comments.append(comment.text)
+        st.title("Comments")
+        st.text_area(label='', value='\n'.join(comments), height=300)
+        display_sentiment_chart(comments)
+        display_sentiment_summary(comments)
 
 def main_page():
-  global username, password, loader
-  st.title("Enter the login details of your Instagram ID")
-  username = st.text_input("Username")
-  password = st.text_input("Password", type="password")
-  if st.button("Login"):
-    try:
-          loader = instaloader.Instaloader()
-          st.write("logging in")
-          loader.login(username, password)
-          st.success("Logged in as {}".format(username))
-          st.write("Redirecting to home page...")
-          st.session_state.runpage = HomePage
-          st.session_state.runpage
-          st.experimental_rerun()
-    finally:
-          st.error("Invalid username or password")
+    st.title("Enter the login details of your Instagram ID")
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+    if st.button("Login"):
+        try:
+            loader = instaloader.Instaloader()
+            st.write("logging in")
+            loader.login(username, password)
+            st.success("Logged in as {}".format(username))
+            st.write("Redirecting to home page...")
+            st.session_state.runpage = HomePage
+            st.experimental_rerun()
+        except:
+            st.error("Invalid username or password")
 
 if "runpage" not in st.session_state:
-  st.session_state.runpage = main_page
+    st.session_state.runpage = main_page
 st.session_state.runpage()
