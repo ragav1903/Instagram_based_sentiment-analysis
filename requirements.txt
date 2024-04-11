@@ -1,4 +1,4 @@
 instaloader==4.6.1
 nltk==3.6.2
-Pillow==7.2.0
+Pillow==10.1
 streamlit==1.1.0
